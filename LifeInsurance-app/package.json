@@ -1,0 +1,22 @@
+{
+    "name": "Fabric-LifeInsurance-app",
+    "version": "1.0.1",
+    "description": "Hyperledger Fabric MOOC Sample Application",
+    "main": "server.js",
+    "dependencies": {
+        "angular": "^1.7.8",
+        "body-parser": "latest",
+        "ejs": "latest",
+        "express": "latest",
+        "fabric-ca-client": "^1.4.0",
+        "fabric-client": "^1.4.0",
+        "grpc": "^1.19.0"
+    },
+    "license": "Apache-2.0",
+    "keywords": [
+        "Hyperledger",
+        "Fabric",
+        "Sample",
+        "Application"
+    ]
+}

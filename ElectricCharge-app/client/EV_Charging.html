@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Electric Charging App</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script type="text/javascript" src="./js/socket/app.js"></script>
+</head>
+
+<body ng-app="myApp" ng-controller="EVUser">
+<div class="container-fluid"> 
+  
+  <!-- Header Section starts here-->
+  <header class="header_bg">
+    <div class="header_left"></div>
+    <div class="header_right"></div>
+    <div class="container-fluid">
+      <div class="logo_pharma"> <a href="index.html"><img src="images/logo.png" alt="logo"/></a> </div>
+      <div class="banner_text_right"> Blockchain for Business<br>
+        <b>WITH IBM BLOCKCHAIN</b> </div>
+    </div>
+  </header>
+  <!-- Header Section ends here--> 
+  
+  <!-- Content Section ends here-->
+  <div class="breadcrumb_main">
+    <div class="left"><a href="#" ng-click="redirectTo('home')"><img src="images/back.png">&nbsp;Home</a></div>
+    <div class="right"><a href="#" ng-click="redirectTo('home')"><img src="images/sign_out.png">&nbsp;Signout</a></div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="dashboard_drk">
+    <div class="dashboard_drk_left">
+      <h1>Electric Charging</h1>
+      <div class="user"><span>Hi User</span>
+        <!--Cheif Supplying Officer--></div>
+		
+      
+      <ul class="left_submenu">
+        <li class="create_dark" ng-click="redirectTo('EVCharging')">Update Charging Details</li>
+
+        <li class="create_dark" ng-click="updateValue()">Update Charging factor</li>
+
+        <li class="search_bar">
+        <input type="text" placeholder="Search" ng-model="searchHistory"><input type="submit" value=" "ng-click="search()"><div class="clearfix"></div></li>
+      </ul>
+
+ 
+      
+    </div>
+    <div class="dashboard_drk_right">
+      <div ng-show="createPage">
+      <h3>Update Charging</h3>
+      <div class="col-md-4">
+        <label>Transaction ID</label>
+        <input type="text" name="TransactionID" id="TransactionID" placeholder="Transaction ID" ng-model="user.transactionID" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+        <label>Station ID</label>
+        <input type="text" id="StationID" placeholder="StationID"ng-model="user.stationID" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+        <label>Customer ID</label>
+        <input type="text" id="CustomerID" placeholder="CustomerID" ng-model="customerID" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+      </div>
+      <div class="col-md-4">
+        <label>Type of Consumption</label>
+        <input type="text" id="ConsumptionType" placeholder="Type of Consumption" ng-model="user.consumptionType" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+        <label>Type of vehicle</label>
+        <input type="text" id="VehicleType" placeholder="Type of vehicle" ng-model="user.vehicleType" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+      </div>
+      <div class="col-md-4">
+        <label>Charged Value</label>
+        <input type="text" id="ChargedValue" placeholder="Charged Value" ng-model="user.chargedValue" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+        <label>Charged Price</label>
+        <input type="text" id="ChargedPrice" placeholder="Charged Price" ng-model="user.chargedPrice" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+      </div>
+      <div class="clearfix"></div>
+      <div class="submit_block" ng-show="showProceed">
+        <input id="create" type="submit" value="PROCEED" ng-click="proceed()">
+      </div>
+      <div class="error" ng-show="valuesIncomplete"><h3>Please enter all the fields.</h3></div>
+    </div>
+        <div ng-show="showSearch"> 
+            <h3>User Profile</h3>
+            <div class="col-md-3">
+            <label>Name :</label>
+            <label class="labelvalue">{{searchResults.first_name}} &nbsp; {{searchResults.last_name}}</label>
+            </div>
+            <div class="col-md-3">
+            <label>PAN :</label>
+            <label class="labelvalue">{{searchResults.pan}}</label>
+            </div>
+            <div class="col-md-3">
+            <label>Annual Income :</label>
+            <label class="labelvalue">&dollar; {{searchResults.annual_income | number}}</label>
+            </div>
+            <div class="col-md-3">
+                <label>Total Insured Amount :</label>
+                <label class="labelvalue">&dollar; {{totalInsuredAmount | number}}</label>
+                </div>
+            <div class="col-md-3">
+                <label>User Risk</label>
+                <label class="labelvalue"><span ng-class="riskStatus=='HIGH'? 'red' :(riskStatus=='MODERATE'? 'orange':'green')">{{riskStatus}}</span></label>
+            </div>
+            <!--<div class="col-md-4">
+      <label>Number of Policies :</label>
+      {{searchResults.nop}}
+      </div>-->
+        </div>
+      <div class="alert" ng-show="showTransaction">
+          <span class="closebtn" ng-click="closeResults()">&times;</span> 
+          <strong>Transaction Successful!</strong><br>View more details <span class="detailsarrow" ng-click="showDetails=!showDetails" ng-hide="showDetails">	&raquo;</span>
+          <span class="detailsarrow" ng-click="showDetails=!showDetails"ng-show="showDetails">	&laquo;</span>
+          <span ng-show="showDetails">&emsp; &emsp; Transaction id: {{txid}}</span>
+        </div>
+        <div class="alertWarning" ng-show="showWarning">
+            <span class="closebtn" ng-click="closeWarning()">&times;</span> 
+            <strong>Error !</strong><br>{{warningMessage}}
+          </div>
+        <div class="col-md-12" ng-show="showSearch">
+            <br>
+          <div class="clearfix"></div>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                      <th>Policy Number</th>
+                      <th>Insurance Company</th>
+                      <th>Requested Amount</th>
+                      <th>Status</th>
+                      <th>Insured Amount</th>
+                      <th>Date of Approval</th>
+                      <th>Comments</th>
+                      <th>Nominee Name</th>
+                    </tr>
+                    <tr ng-repeat="searchPolicy in searchResults.policies " ng-if="searchPolicy.policy_number!=''">
+                      <td>{{ searchPolicy.policy_number }}</td>
+                      <td>{{ searchPolicy.company_name }}</td>
+                      <td class="numberRight">&dollar; {{ searchPolicy.requested_amount | number}}</td>
+                      <td>{{ searchPolicy.claim_status }}</td>
+                      <td class="numberRight"><div class="dollar" ng-hide="searchPolicy.insured_amount==='--NA--'">&dollar;</div><span ng-hide="searchPolicy.insured_amount==='--NA--'">{{ searchPolicy.insured_amount | number}}</span><span ng-show="searchPolicy.insured_amount==='--NA--'">{{ searchPolicy.insured_amount}}</span></td>
+                      <td>{{ searchPolicy.date_of_approval }}</td>
+                      <td>{{ searchPolicy.comments }}</td>
+                      <td><span ng-hide="searchPolicy.nominee"><input id="getNominee" type="submit" value="Nominee" ng-click="nomineeName(searchPolicy)"></span><span ng-show="searchPolicy.nominee">{{searchPolicy.nominee}}</span></td>
+                    </tr>
+                  </tbody>
+      </table>
+          </div>
+
+      <div class="loader" ng-show="loading"></div>
+
+      <div ng-show="updatePage">
+          <h3>Update Conversion Factor</h3>
+          <div class="col-md-4">
+            <label>Factor Value</label>
+            <input type="text" name="FactorValue" id="FactorValue" placeholder="Factor Value" ng-model="user.FactorValue" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+            </div>
+            <div class="clearfix"></div>
+            <div class="submit_block" ng-show="showProceed">
+              <input id="create" type="submit" value="UPDATE" ng-click="update()">
+            </div>
+        </div>
+    </div>
+
+   
+
+     
+     
+          
+
+
+   
+    <div class="clearfix"></div>
+  </div>
+  <!-- Content Section ends here--> 
+  
+  <!-- Footer Section starts here-->
+  <footer class="footer">©  copyright 2018</footer>
+  <!-- Footer Section ends here--> 
+  
+</div>
+</body>
+</html>

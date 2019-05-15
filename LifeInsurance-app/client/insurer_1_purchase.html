@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Insurance</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<script type="text/javascript" src="./js/socket/app.js"></script>
+</head>
+
+<body ng-app="myApp" ng-controller="insuranceABC" ng-init="setInsuranceCompany('ABC_INSURANCE')">
+<div class="container-fluid"> 
+  
+  <!-- Header Section starts here-->
+  <header class="header_bg">
+    <div class="header_left"></div>
+    <div class="header_right"></div>
+    <div class="container-fluid">
+      <div class="logo_pharma"> <a href="index.html"><img src="images/logo.png" alt="logo"/></a> </div>
+      <div class="banner_text_right"> Blockchain for Business<br>
+        <b>WITH IBM BLOCKCHAIN</b> </div>
+    </div>
+  </header>
+  <!-- Header Section ends here--> 
+  
+  <!-- Content Section ends here-->
+  <div class="breadcrumb_main">
+    <div class="left"><a href="#" ng-click="redirectTo('home')"><img src="images/back.png">&nbsp;Home</a></div>
+    <div class="center">UPTO {{protectionFactor}}X COVERAGE!</div>
+    <div class="right"><a href="#" ng-click="redirectTo('home')"><img src="images/sign_out.png">&nbsp;Signout</a></div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="dashboard_drk">
+    <div class="dashboard_drk_left">
+      <h1>{{companyDisplayName}}</h1>
+      <div class="user"><span>Hi User</span>
+        <!--Cheif Supplying Officer--></div>
+		
+      
+      <ul class="left_submenu">
+        <li class="create_dark" ng-click="redirectTo('ABC')">Create Insurance</li>
+        <li class="search_bar">
+        <input type="text" placeholder="Search" ng-model="searchPan"><input type="submit" value=" "ng-click="search()"><div class="clearfix"></div></li>
+
+
+      </ul>
+    </div>
+    <div class="dashboard_drk_right">
+      <div ng-show="createPage">
+      <h3>Create Insurance</h3>
+      <div class="col-md-4">
+        <label>First Name</label>
+        <input type="text" name="FirstName" id="FirstName" placeholder="First Name" ng-model="user.firstName" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+        <label>PAN</label>
+        <input type="text" id="PAN" placeholder="PAN"ng-model="user.pan" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+        <label>Nominee Name</label>
+        <input type="text" id="nominee" placeholder="Nominee name" ng-model="nominee" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+      </div>
+      <div class="col-md-4">
+        <label>Last Name</label>
+        <input type="text" id="" placeholder="Last Name" ng-model="user.lastName" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+        <label>Annual Income</label>
+        <input type="text" id="annualIncome" placeholder="Annual Income" ng-model="user.annualIncome" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+      </div>
+      <div class="col-md-4">
+        <label>Date of Birth</label>
+        <input type="date" id="DOB" placeholder="dd-mm-yyyy" ng-model="user.dob" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+        <label>Insured Amount</label>
+        <input type="text" id="InsuredAmount" placeholder="Insured Amount" ng-model="user.requestedAmount" ng-readonly="finalStep" ng-class="{banned : finalStep}">
+      </div>
+      <div class="clearfix"></div>
+      <div class="submit_block" ng-show="showProceed">
+        <input id="create" type="submit" value="PROCEED" ng-click="checkDetails()">
+      </div>
+      <div class="error" ng-show="valuesIncomplete"><h3>Please enter all the fields.</h3></div>
+    </div>
+        <div ng-show="showSearch"> 
+            <h3>User Profile</h3>
+            <div class="col-md-3">
+            <label>Name :</label>
+            <label class="labelvalue">{{searchResults.first_name}} &nbsp; {{searchResults.last_name}}</label>
+            </div>
+            <div class="col-md-3">
+            <label>PAN :</label>
+            <label class="labelvalue">{{searchResults.pan}}</label>
+            </div>
+            <div class="col-md-3">
+            <label>Annual Income :</label>
+            <label class="labelvalue">&dollar; {{searchResults.annual_income | number}}</label>
+            </div>
+            <div class="col-md-3">
+                <label>Total Insured Amount :</label>
+                <label class="labelvalue">&dollar; {{totalInsuredAmount | number}}</label>
+                </div>
+            <div class="col-md-3">
+                <label>User Risk</label>
+                <label class="labelvalue"><span ng-class="riskStatus=='HIGH'? 'red' :(riskStatus=='MODERATE'? 'orange':'green')">{{riskStatus}}</span></label>
+            </div>
+            <!--<div class="col-md-4">
+      <label>Number of Policies :</label>
+      {{searchResults.nop}}
+      </div>-->
+        </div>
+      <div class="alert" ng-show="showTransaction">
+          <span class="closebtn" ng-click="closeResults()">&times;</span> 
+          <strong>Transaction Successful!</strong><br>View more details <span class="detailsarrow" ng-click="showDetails=!showDetails" ng-hide="showDetails">	&raquo;</span>
+          <span class="detailsarrow" ng-click="showDetails=!showDetails"ng-show="showDetails">	&laquo;</span>
+          <span ng-show="showDetails">&emsp; &emsp; Transaction id: {{txid}}</span>
+        </div>
+        <div class="alertWarning" ng-show="showWarning">
+            <span class="closebtn" ng-click="closeWarning()">&times;</span> 
+            <strong>Error !</strong><br>{{warningMessage}}
+          </div>
+        <div class="col-md-12" ng-show="showSearch">
+            <br>
+          <div class="clearfix"></div>
+            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tbody>
+                    <tr>
+                      <th>Policy Number</th>
+                      <th>Insurance Company</th>
+                      <th>Requested Amount</th>
+                      <th>Status</th>
+                      <th>Insured Amount</th>
+                      <th>Date of Approval</th>
+                      <th>Comments</th>
+                      <th>Nominee Name</th>
+                    </tr>
+                    <tr ng-repeat="searchPolicy in searchResults.policies " ng-if="searchPolicy.policy_number!=''">
+                      <td>{{ searchPolicy.policy_number }}</td>
+                      <td>{{ searchPolicy.company_name }}</td>
+                      <td class="numberRight">&dollar; {{ searchPolicy.requested_amount | number}}</td>
+                      <td>{{ searchPolicy.claim_status }}</td>
+                      <td class="numberRight"><div class="dollar" ng-hide="searchPolicy.insured_amount==='--NA--'">&dollar;</div><span ng-hide="searchPolicy.insured_amount==='--NA--'">{{ searchPolicy.insured_amount | number}}</span><span ng-show="searchPolicy.insured_amount==='--NA--'">{{ searchPolicy.insured_amount}}</span></td>
+                      <td>{{ searchPolicy.date_of_approval }}</td>
+                      <td>{{ searchPolicy.comments }}</td>
+                      <td><span ng-hide="searchPolicy.nominee"><input id="getNominee" type="submit" value="Nominee" ng-click="nomineeName(searchPolicy)"></span><span ng-show="searchPolicy.nominee">{{searchPolicy.nominee}}</span></td>
+                    </tr>
+                  </tbody>
+      </table>
+          </div>
+      <div id="submitPolicy" ng-show="finalStep" class="col-md-12 message-box">
+        <h3>Details Verified !</h3>
+        <div ng-show="simpleConfirm">
+          <p>Press the submit button to confirm policy.</p>
+          <input type="text" placeholder="Add comments" ng-model="user.comments">
+            <input type="button" value="SUBMIT" ng-click="proceed()">
+            <input type="button" value="CANCEL" ng-click="redirectTo('ABC')">
+        </div>
+        <div ng-show="rejected">
+          <p>Policy has been rejected. Reason : {{user.comments}}. <br>Click OK to continue.</p>
+            <input type="button" value="OK" ng-click="proceed()">
+        </div>
+        <div  ng-show="smallerAmountDiv">
+          <div class="col-md-3">
+          <p>Your maximum allowed coverage is <b>&dollar; {{protectionFactor * user.annualIncome | number}}</b></p>
+          <p>You are eligible for a smaller insured amount, that is, <b>&dollar; {{ smallerAmount  | number}}.</b></p>
+          <p>Press the submit button to confirm policy for the amount <b>&dollar; {{ smallerAmount  | number}}.</b></p>
+          <p>Your existing policy details are given alongside.</p>
+        </div>
+        <div class="col-md-3">
+          <table width="50%" border="0" cellspacing="0" cellpadding="0" >
+              <tbody>
+                  <tr>
+                    <th><font color="white">Insurance Company</font></th>
+                    <th><font color="white">Insured Amount</font></th>
+                  </tr>
+                  <tr ng-repeat="search in splitUp ">
+                    <td>{{ search.companyName }}</td>
+                    <td class="numberRight">&dollar; {{ search.amount | number}}</td>
+                  </tr>
+                </tbody>
+    </table>
+  </div>
+    <div>
+    <p>Total Insured Amount is <b>&dollar;{{((protectionFactor * user.annualIncome) - smallerAmount) | number }}</b></p>
+  </div>
+    <br>
+          <input type="text" placeholder="Add comments" ng-model="user.comments">
+            <input type="button" value="SUBMIT" ng-click="proceed()">
+            <input type="button" value="CANCEL" ng-click="redirectTo('ABC')">
+        </div>
+      </div>
+      <div class="loader" ng-show="loading"></div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <!-- Content Section ends here--> 
+  
+  <!-- Footer Section starts here-->
+  <footer class="footer">©  copyright 2018</footer>
+  <!-- Footer Section ends here--> 
+  
+</div>
+</body>
+</html>
