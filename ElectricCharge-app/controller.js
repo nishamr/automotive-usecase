@@ -22,7 +22,8 @@ return{
 	add_creditFactor: function(req, res){
 		console.log("Addding the conversion factor for credit: ");
 
-		var credit_value = req.params.FactorValue
+		var credit_value = req.body.FactorValue
+		console.log(credit_value)
 
 		var fabric_client = new Fabric_Client();
 
@@ -184,10 +185,12 @@ return{
 		});
 	},
 	updateChargingDetails: function(req, res){
-		console.log(req.params.chargingDetails);
+		console.log(req.body);
 		console.log("Updating charging details: ");
 
-		var input = JSON.parse(req.params.chargingDetails);
+		//var input = JSON.parse(req.params.chargingDetails);
+
+		var input = req.body
 
 		//var array = req.params.chargingDetails.split(",");
 		console.log("---");
@@ -415,7 +418,7 @@ return{
 
 		    
 		    const request = {
-				targets : [peer3],
+				targets : [peer1],
 		        chaincodeId: 'evchaincode',
 		        txId: tx_id,
 		        fcn: 'transactionHistory',
