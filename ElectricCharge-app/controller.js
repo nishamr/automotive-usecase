@@ -22,7 +22,8 @@ return{
 	add_creditFactor: function(req, res){
 		console.log("Addding the conversion factor for credit: ");
 
-		var credit_value = req.params.FactorValue
+		var credit_value = req.body.FactorValue
+		console.log(credit_value)
 
 		var fabric_client = new Fabric_Client();
 
@@ -78,7 +79,7 @@ return{
 		        chaincodeId: 'evchaincode',
 		        fcn: 'addCreditFactor',
 		        args: [credit_value],
-		        chainId: 'mychannel',
+		        //chainId: 'mychannel',
 				txId: tx_id
 		    };
 			console.log(request)
@@ -184,10 +185,12 @@ return{
 		});
 	},
 	updateChargingDetails: function(req, res){
-		console.log(req.params.chargingDetails);
+		console.log(req.body);
 		console.log("Updating charging details: ");
 
-		var input = JSON.parse(req.params.chargingDetails);
+		//var input = JSON.parse(req.params.chargingDetails);
+
+		var input = req.body
 
 		//var array = req.params.chargingDetails.split(",");
 		console.log("---");
@@ -195,7 +198,7 @@ return{
 
 		var TransactionID = input.transactionID;
 		var StationID = input.stationID;
-		var ConsumerID = input.customerID;
+		var CustomerIDID = input.customerID;
 		var ConsumptionType = input.consumptionType;
 		var VehicleType = input.vehicleType;
 		var ChargedValue = input.chargedValue;
@@ -255,8 +258,8 @@ return{
 		        //targets : --- letting this default to the peers assigned to the channel
 		        chaincodeId: 'evchaincode',
 		        fcn: 'updateChargingDetails',
-		        args: [TransactionID, StationID, ConsumerID, ConsumptionType, VehicleType, ChargedValue, ChargedPrice, FactorID],
-		        chainId: 'mychannel',
+		        args: [TransactionID, StationID, CustomerIDID, ConsumptionType, VehicleType, ChargedValue, ChargedPrice, FactorID],
+		        //chainId: 'mychannel',
 				txId: tx_id
 		    };
 			console.log(request)
@@ -285,7 +288,12 @@ return{
 		            'Successfully sent Proposal and received ProposalResponse: Status - %s, message - "%s"',
 					proposalResponses[0].response.status, proposalResponses[0].response.message));
 					//added to send the json response of user back to UI
-					res.write(proposalResponses[0].response.payload.toString());
+					//res.write(proposalResponses[0].response.payload.toString());
+					
+					console.log((JSON.parse(JSON.stringify(proposalResponses[0].response.payload.toString()))));
+					res.send(JSON.parse(proposalResponses[0].response.payload.toString()));
+
+					console.log("sucessfully sent the response");
 		        // build up the request for the orderer to have the transaction committed
 		        var request = {
 		            proposalResponses: proposalResponses,
@@ -359,7 +367,7 @@ return{
 
 		    if(results && results[1] && results[1].event_status === 'VALID') {
 		        console.log('Successfully committed the change to the ledger by the peer');
-				res.write("/"+tx_id.getTransactionID());
+				//res.write("/"+tx_id.getTransactionID());
 				res.end();
 			
 		    } else {
@@ -415,7 +423,7 @@ return{
 
 		    
 		    const request = {
-				targets : [peer3],
+				targets : [peer1],
 		        chaincodeId: 'evchaincode',
 		        txId: tx_id,
 		        fcn: 'transactionHistory',
@@ -434,8 +442,8 @@ return{
 		            res.send("Could not locate insurance for given PAN number")
 		            
 		        } else {
-		            console.log("Response is ", query_responses[0].toString());
-		            res.send(query_responses[0].toString())
+		            console.log("Response is ", JSON.parse(query_responses[0].toString()));
+		            res.send(JSON.parse(query_responses[0].toString()))
 		        }
 		    } else {
 		        console.log("No payloads were returned from query");

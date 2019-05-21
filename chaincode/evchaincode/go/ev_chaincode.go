@@ -32,6 +32,7 @@ type EVUser struct {
 	VehicleType         string `json:"VehicleType"`
 	ChargedValue        string `json:"ChargedValue"`
 	ChargedPrice        string `json:"ChargedPrice"`
+	BlockchainTxid      string `json:"BlockchainTxid"`
 }
 
 type ChargingStation struct {
@@ -40,11 +41,12 @@ type ChargingStation struct {
 	CreditPtsEarned     string `json:"CreditPtsEarned"`
 	CreditFinalBalance  string `json:"CreditFinalBalance"`
 	TransactionID       string `json:"TransactionID"`
-	ConsumerID          string `json:"ConsumerID"`
+	CustomerID          string `json:"CustomerID"`
 	ConsumptionType     string `json:"ConsumptionType"`
 	VehicleType         string `json:"VehicleType"`
 	ChargedValue        string `json:"ChargedValue"`
 	ChargedPrice        string `json:"ChargedPrice"`
+	BlockchainTxid      string `json:"BlockchainTxid"`
 }
 
 type CreditFactor struct {
@@ -80,12 +82,14 @@ func (t *ElectricVehicleChaincode) updateChargingDetails(stub shim.ChaincodeStub
 
 	TransactionID := args[0]
 	StationID := args[1]
-	ConsumerID := args[2]
+	CustomerID := args[2]
 	ConsumptionType := args[3]
 	VehicleType := args[4]
 	ChargedValue, err := strconv.Atoi(args[5])
 	ChargedPrice := args[6]
 	FactorID := args[7]
+
+	BlockchainTxid := stub.GetTxID()
 
 	var CreditPtsOpeningBalCo, CreditPtsEarnedCo, CreditFinalBalanceCo int
 	var CreditPtsOpeningBalCs, CreditPtsEarnedCs, CreditFinalBalanceCs int
@@ -108,12 +112,12 @@ func (t *ElectricVehicleChaincode) updateChargingDetails(stub shim.ChaincodeStub
 	}
 
 	//getting data from EVUser and saving new data
-	UserData, err := stub.GetState(ConsumerID)
+	UserData, err := stub.GetState(CustomerID)
 	if err != nil {
-		jsonResp := "{\"Error\":\"Failed to get data for " + ConsumerID + "\"}"
+		jsonResp := "{\"Error\":\"Failed to get data for " + CustomerID + "\"}"
 		return shim.Error(jsonResp)
 	} else if UserData == nil {
-		fmt.Printf("New User data will be created for " + ConsumerID + "\n")
+		fmt.Printf("New User data will be created for " + CustomerID + "\n")
 		CreditPtsOpeningBalCo = 0
 		CreditPtsEarnedCo = 0
 		CreditFinalBalanceCo = 0
@@ -131,13 +135,13 @@ func (t *ElectricVehicleChaincode) updateChargingDetails(stub shim.ChaincodeStub
 	CreditPtsOpeningBalCo = CreditPtsOpeningBalCo + CreditPtsEarnedCo
 	CreditPtsEarnedCo = (ChargedValue * ConversionFactor)
 	CreditFinalBalanceCo = CreditFinalBalanceCo + CreditPtsEarnedCo
-	EVUser := &EVUser{ConsumerID, strconv.Itoa(CreditPtsOpeningBalCo), strconv.Itoa(CreditPtsEarnedCo), strconv.Itoa(CreditFinalBalanceCo), TransactionID, StationID, ConsumptionType, VehicleType, strconv.Itoa(ChargedValue), ChargedPrice}
+	EVUser := &EVUser{CustomerID, strconv.Itoa(CreditPtsOpeningBalCo), strconv.Itoa(CreditPtsEarnedCo), strconv.Itoa(CreditFinalBalanceCo), TransactionID, StationID, ConsumptionType, VehicleType, strconv.Itoa(ChargedValue), ChargedPrice, BlockchainTxid}
 	EVUserJSONasBytes, err := json.Marshal(EVUser)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
 	// Write to ledger of EV User
-	err = stub.PutState(ConsumerID, EVUserJSONasBytes)
+	err = stub.PutState(CustomerID, EVUserJSONasBytes)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -166,7 +170,7 @@ func (t *ElectricVehicleChaincode) updateChargingDetails(stub shim.ChaincodeStub
 	CreditPtsOpeningBalCs = CreditPtsOpeningBalCs + CreditPtsEarnedCs
 	CreditPtsEarnedCs = (ChargedValue * ConversionFactor)
 	CreditFinalBalanceCs = CreditFinalBalanceCs + CreditPtsEarnedCs
-	ChargingStation := &ChargingStation{StationID, strconv.Itoa(CreditPtsOpeningBalCs), strconv.Itoa(CreditPtsEarnedCs), strconv.Itoa(CreditFinalBalanceCs), TransactionID, ConsumerID, ConsumptionType, VehicleType, strconv.Itoa(ChargedValue), ChargedPrice}
+	ChargingStation := &ChargingStation{StationID, strconv.Itoa(CreditPtsOpeningBalCs), strconv.Itoa(CreditPtsEarnedCs), strconv.Itoa(CreditFinalBalanceCs), TransactionID, CustomerID, ConsumptionType, VehicleType, strconv.Itoa(ChargedValue), ChargedPrice, BlockchainTxid}
 	ChargingStationJSONasBytes, err := json.Marshal(ChargingStation)
 	if err != nil {
 		return shim.Error(err.Error())

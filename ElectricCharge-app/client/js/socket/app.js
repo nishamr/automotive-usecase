@@ -67,14 +67,14 @@ data : requestInfo
 
       // var chargingDetails = $scope.user.transactionID + "," + $scope.user.stationID + "," + $scope.customerID + "," + $scope.user.consumptionType + "," + $scope.user.vehicleType + "," + $scope.user.chargedValue + "," + $scope.user.chargedPrice;
             console.log("inside abc create");
-        $http.get('/update_chargingDetails/'+chargingDetails).then(function(output){
+        $http.post('/update_chargingDetails', chargingDetails).then(function(output){
             console.log("output of update charging details")
             console.log(output);
-            var response = output.data.split("/");
+            var response = output
             console.log("response after splitting");
             console.log(response)
-            //$scope.txid=output.data;
-            $scope.txid = response[1];
+            $scope.txid=response.data.BlockchainTxid;
+            //$scope.txid = response[1];
             $scope.showTransaction=true;
             $scope.showProceed=false;
             $scope.showSearch=false;
@@ -98,9 +98,13 @@ data : requestInfo
         $scope.loading = true;
         $scope.finalStep = false;
 
-        var chargingValue = $scope.user.FactorValue;
+        var ChargingValue= new Object();
+        ChargingValue.FactorValue = $scope.user.FactorValue;
+        var chargingValue = JSON.stringify(ChargingValue);
+
+        //var chargingValue = $scope.user.FactorValue;
             console.log("inside update value");
-        $http.get('/add_creditFactor/'+chargingValue).then(function(output){
+        $http.post('/add_creditFactor', chargingValue).then(function(output){
             console.log("output of update  value")
             console.log(output);
             //$scope.txid=output.data;
