@@ -439,7 +439,7 @@ return{
 		    if (query_responses && query_responses.length == 1) {
 		        if (query_responses[0] instanceof Error) {
 		            console.error("error from query = ", query_responses[0]);
-		            res.send("Could not locate insurance for given PAN number")
+		            res.send("Could not retrieve the transaction history for given ID")
 		            
 		        } else {
 		            console.log("Response is ", JSON.parse(query_responses[0].toString()));
@@ -447,11 +447,11 @@ return{
 		        }
 		    } else {
 		        console.log("No payloads were returned from query");
-		        res.send("Could not locate insurance for given PAN number")
+		        res.send("Could not retrieve the transaction history for given ID")
 		    }
 		}).catch((err) => {
 		    console.error('Failed to query successfully :: ' + err);
-		    res.send("Could not locate insurance for given PAN number")
+		    res.send("Could not retrieve the transaction history for given ID")
 		});
 	}
 }

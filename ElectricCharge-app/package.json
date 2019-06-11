@@ -1,5 +1,5 @@
 {
-    "name": "Fabric-LifeInsurance-app",
+    "name": "Fabric-ElectriCharge-app",
     "version": "1.0.1",
     "description": "Hyperledger Fabric MOOC Sample Application",
     "main": "server.js",

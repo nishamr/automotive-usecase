@@ -22,8 +22,7 @@ app.controller("EVUser", function ($scope, $http, $window, $location) {
     $scope.showWarning = false;
     $scope.loading = false;
     $scope.smallerAmount = 0;
-    $scope.insuranceCompanies = [];
-    $scope.insuranceAmounts = [];
+
     $scope.splitUp = [];
     $scope.valuesIncomplete = false;
     $scope.smallerAmountDiv = false;
@@ -149,7 +148,7 @@ data : requestInfo
             console.log($scope.searchHistory);
             $http.get('/get_transactionHistory/' + $scope.searchHistory).then(function (output) {
                 console.log(output);
-                if (output.data === "" || output.data == null || output.data == "Could not locate insurance for given PAN number") {
+                if (output.data === "" || output.data == null || output.data == "Could not locate transction history for given ID") {
                     $scope.createPage = true;
                     $scope.showWarning = true;
                     $scope.showTransaction = false;
@@ -212,45 +211,8 @@ data : requestInfo
         $scope.createPage = true;
     }
 
-    $scope.calculateInsuranceSplitUp = function (policies) {
-        $scope.splitUp = [];
-        $scope.splitUpEntity = {};
-        $scope.insuranceCompanies = [];
-        $scope.insuranceAmounts = [];
-        var indexOfCompany = -1;
-        for (var i = 0; i < policies.length; ++i) {
-            if (policies[i].claim_status === "APPROVED") {
-                if ($scope.insuranceCompanies.indexOf(policies[i].company_name) < 0) {
-                    $scope.insuranceCompanies.push(policies[i].company_name);
-                    indexOfCompany = $scope.insuranceCompanies.indexOf(policies[i].company_name);
-                    $scope.insuranceAmounts[indexOfCompany] = policies[i].insured_amount;
-                } else {
-                    indexOfCompany = $scope.insuranceCompanies.indexOf(policies[i].company_name);
-                    $scope.insuranceAmounts[indexOfCompany] = parseInt($scope.insuranceAmounts[indexOfCompany]) + parseInt(policies[i].insured_amount);
-                }
-            }
-        }
-        for (var i = 0; i < $scope.insuranceCompanies.length; ++i) {
-            $scope.splitUpEntity = {};
-            $scope.splitUpEntity.companyName = $scope.insuranceCompanies[i];
-            $scope.splitUpEntity.amount = $scope.insuranceAmounts[i];
-            console.log($scope.splitUpEntity);
-            $scope.splitUp.push($scope.splitUpEntity);
-        }
-    }
 
-    $scope.createInsurance = function () {
-        $scope.showProceed = true;
-        $scope.createPage = true;
-        $scope.showDetails = false;
-        $scope.showSearch = false;
-        $scope.showTransaction = false;
-        $scope.finalStep = false;
-        $scope.loading = false;
-        $scope.smallerAmountDiv = false;
-        $scope.smallerAmount = 0;
-        $scope.user = {};
-    }
+
     $scope.checkCurrentValue = function (name) {
         if (name == '') {
             return false;
