@@ -28,7 +28,7 @@ MAX_RETRY=5
 #	CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/chaincode_example02/node/"
 # fi
 
-CC_SRC_PATH="github.com/chaincode/evchaincode/go/"
+CC_SRC_PATH="github.com/chaincode/automotive/go/"
 if [ "$LANGUAGE" = "node" ]; then
 	CC_SRC_PATH="/opt/gopath/src/github.com/chaincode/insurance_private/node/"
 fi
